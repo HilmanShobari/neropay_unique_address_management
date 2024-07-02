@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import { login } from './Axios';
+import { axiosLogin } from './Axios';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -22,7 +22,7 @@ function LoginForm() {
     e.preventDefault();
     setLoading(true); // Mengatur loading menjadi true saat mulai submit form
     try {
-      const response = await login(email, password);
+      const response = await axiosLogin(email, password);
       console.log('Login successful:', response);
       // Arahkan ke halaman home setelah login berhasil
       navigate('/');
