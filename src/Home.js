@@ -84,7 +84,7 @@ function Home() {
       <button className="logout-button" onClick={handleLogout}>Logout</button>
       {loading && <p>Loading...</p>} {/* Tampilkan pesan loading jika loading === true */}
       {errorMessage && <p className="error">{errorMessage}</p>}
-      {qrData && <QRCode value={qrData} size={300} />}
+      {qrData && <QRCode value={qrData} size={500} />}
       <ToastContainer />
     </div>
   );
