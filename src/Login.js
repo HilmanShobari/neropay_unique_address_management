@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import { login } from './Axios';
@@ -7,18 +7,37 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false); // State untuk status loading
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const merchantID = localStorage.getItem('merchantID');
+    if (!!merchantID) {
+      navigate('/');
+      return;
+    }
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Mengatur loading menjadi true saat mulai submit form
     try {
       const response = await login(email, password);
-      console.log('Login successful:', response.data);
-      navigate('/home'); // Arahkan ke halaman home setelah login berhasil
+      console.log('Login successful:', response);
+      // Arahkan ke halaman home setelah login berhasil
+      navigate('/');
     } catch (error) {
-      setErrorMessage(
-        error.response?.data.message ?? 'Login failed. Please try again.'
-      );
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage('Login failed. Please try again.');
+      }
+    } finally {
+      setLoading(false); // Mengatur loading kembali menjadi false setelah selesai submit form
     }
   };
 
@@ -43,8 +62,13 @@ function LoginForm() {
             required
           />
         </div>
+        {loading && <p>Loading...</p>}{' '}
+        {/* Tampilkan pesan loading jika loading === true */}
         {errorMessage && <p className="error">{errorMessage}</p>}
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          Login
+        </button>{' '}
+        {/* Tambahkan disabled saat loading */}
       </form>
     </div>
   );
