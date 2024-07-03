@@ -44,6 +44,7 @@ function LoginForm() {
   return (
     <div className="LoginForm">
       <form onSubmit={handleSubmit}>
+        <h1 className="title">Login Merchant</h1>
         <div className="form-group">
           <label>Email:</label>
           <input

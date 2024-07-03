@@ -80,7 +80,7 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1>Welcome to Home Page</h1>
+      <h1>Scan This QR To Login</h1>
       <button className="logout-button" onClick={handleLogout}>Logout</button>
       {loading && <p>Loading...</p>} {/* Tampilkan pesan loading jika loading === true */}
       {errorMessage && <p className="error">{errorMessage}</p>}
