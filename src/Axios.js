@@ -46,4 +46,14 @@ export const axiosCheckLoginQr = async (merchantID, token) => {
   }
 };
 
+export const axiosGetListCashier = async (merchantID) => {
+  try {
+    const response = await api.post('/cashier/list', { merchantID });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+    throw error;
+  }
+};
+
 export default api;
