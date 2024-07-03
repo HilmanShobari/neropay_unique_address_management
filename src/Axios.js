@@ -28,7 +28,7 @@ export const axiosLogin = async (email, password) => {
 // Fungsi untuk memanggil API generate QR code dengan merchantID
 export const axiosGenerateLoginQr = async (merchantID) => {
   try {
-    const response = await api.post('/pgqr/loginQr/generate', { merchantID });
+    const response = await api.post('/loginQr/generate', { merchantID });
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);
@@ -38,7 +38,7 @@ export const axiosGenerateLoginQr = async (merchantID) => {
 
 export const axiosCheckLoginQr = async (merchantID, token) => {
   try {
-    const response = await api.post('/pgqr/loginQr/check', { merchantID, token });
+    const response = await api.post('/loginQr/check', { merchantID, token });
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);

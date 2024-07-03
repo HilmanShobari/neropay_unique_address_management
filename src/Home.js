@@ -5,6 +5,7 @@ import './Home.css'; // File CSS untuk gaya tambahan
 import { axiosCheckLoginQr, axiosGenerateLoginQr } from './Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Button from '@mui/material/Button'; // Import Button component from Material UI
 
 function Home() {
   const [qrData, setQrData] = useState('');
@@ -78,9 +79,21 @@ function Home() {
     navigate('/login');
   };
 
+  const handleListCashier = () => {
+    navigate('/list-cashier');
+  };
+
   return (
     <div className="home-container">
       <h1>Scan This QR To Login</h1>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleListCashier}
+        style={{ position: 'absolute', top: 10, left: 10, width: '10%' }}
+      >
+        List Cashier
+      </Button>
       <button className="logout-button" onClick={handleLogout}>Logout</button>
       {loading && <p>Loading...</p>} {/* Tampilkan pesan loading jika loading === true */}
       {errorMessage && <p className="error">{errorMessage}</p>}
