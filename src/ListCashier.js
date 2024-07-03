@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { axiosGetListCashier } from './Axios';
-import { Table, TableHead, TableBody, TableRow, TableCell, Paper, Typography } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Paper, Typography, Button } from '@mui/material';
 import { styled } from '@mui/system';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -39,11 +39,23 @@ function ListCashierClass() {
     fetchListCashier(); // Call the async function directly inside useEffect
   }, [navigate]); // Only navigate is a dependency here, listCashier is not needed
 
+  const handleHome = () => {
+    navigate('/');
+  };
+
   return (
     <Paper>
       <Typography variant="h4" align="center" gutterBottom>
         List Cashier Logged In
       </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleHome}
+        style={{ position: 'absolute', top: 10, left: 10, width: '10%' }}
+      >
+        Home
+      </Button>
       <Table>
         <TableHead>
           <TableRow>
