@@ -69,7 +69,7 @@ function Home() {
 
     const checkLoginQrInterval = setInterval(() => {
       checkLoginQr();
-    }, 3000); // Post data every 3 seconds
+    }, 5000); // Post data every 5 seconds
 
     return () => clearInterval(checkLoginQrInterval); // Cleanup interval on component unmount
   }, [merchantID, qrToken, navigate]); // Add qrToken as dependency
