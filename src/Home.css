@@ -2,6 +2,10 @@
   padding: 20px;
 }
 
+.content-container {
+  text-align: center;
+}
+
 .logout-button {
   width: 10%;
   position: absolute;
