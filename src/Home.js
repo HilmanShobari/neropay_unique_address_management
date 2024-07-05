@@ -98,6 +98,7 @@ function Home() {
       {loading && <p>Loading...</p>} {/* Tampilkan pesan loading jika loading === true */}
       {errorMessage && <p className="error">{errorMessage}</p>}
       {qrData && <QRCode value={qrData} size={300} />}
+      <p>Cashier ID:</p>
       <ToastContainer />
     </div>
   );

@@ -59,14 +59,14 @@ function ListCashierClass() {
       <Table>
         <TableHead>
           <TableRow>
-            <StyledTableCell>Cashier Index</StyledTableCell>
+            <StyledTableCell>Cashier ID</StyledTableCell>
             <StyledTableCell>Cashier Token</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listCashier.map(cashier => (
             <TableRow key={cashier.id}>
-              <StyledTableCellBody>{cashier.cashierIndex}</StyledTableCellBody>
+              <StyledTableCellBody>{cashier.cashierID}</StyledTableCellBody>
               <StyledTableCellBody>{cashier.cashierToken}</StyledTableCellBody>
             </TableRow>
           ))}
