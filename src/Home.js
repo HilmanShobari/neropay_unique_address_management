@@ -2,18 +2,43 @@ import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode.react'; // Library untuk generate QR code
 import { useNavigate } from 'react-router-dom';
 import './Home.css'; // File CSS untuk gaya tambahan
-import { axiosCheckLoginQr, axiosGenerateLoginQr } from './Axios';
+import {
+  axiosCheckLoginQr,
+  axiosGenerateLoginQr,
+  axiosGetListCashier,
+  axiosLogoutQr
+} from './Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Button from '@mui/material/Button'; // Import Button component from Material UI
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+} from '@mui/material';
 
 function Home() {
+  const [listCashier, setListCashier] = useState([]);
   const [qrData, setQrData] = useState('');
   const [merchantID, setMerchantID] = useState('');
   const [cashierID, setCashierID] = useState('');
   const [qrToken, setQrToken] = useState('');
+  const [cashierToken, setCashierToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false); // State untuk status loading
+  const [open, setOpen] = useState(false); // State for dialog open
+  const [openQrModal, setOpenQrModal] = useState(false); // State for QR modal open
+  const [qrCards, setQrCards] = useState([]); // State for storing multiple QR code cards
+  const [cashierName, setCashierName] = useState('');
+  const [expirationTime, setExpirationTime] = useState('');
+  const [selectedCashier, setSelectedCashier] = useState(null); // State for selected cashier
+  const [modalQrData, setModalQrData] = useState(''); // State for QR code data in modal
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,28 +49,37 @@ function Home() {
     }
 
     setMerchantID(storedMerchantID);
-    fetchQrData(storedMerchantID); // Initial fetch
 
-    const fetchQrDataInterval = setInterval(() => {
-      fetchQrData(storedMerchantID);
-    }, 300000); // Fetch data every 30 seconds
+    const fetchListCashier = async () => {
+      try {
+        const merchantID = localStorage.getItem('merchantID');
+        if (!merchantID) {
+          navigate('/login');
+          return;
+        }
 
-    return () => clearInterval(fetchQrDataInterval); // Cleanup interval on component unmount
-  }, [navigate]);
+        const response = await axiosGetListCashier(merchantID);
+        console.log('response list cashier: ', response.data);
+        setListCashier(response.data);
+      } catch (error) {
+        console.error('Error fetching list of cashiers:', error);
+      }
+    };
 
-  const fetchQrData = async (merchantID) => {
+    fetchListCashier(); // Fetch list cashiers
+  }, [navigate, qrCards, openQrModal]);
+
+  const fetchQrData = async (merchantID, cashierName, expirationTime) => {
     setLoading(true); // Mengatur loading menjadi true saat mulai fetch data
     try {
-      const response = await axiosGenerateLoginQr(merchantID);
-      const qrData = {
-        merchantID: response.data.merchantID,
-        cashierID: response.data.cashierID,
-        qrToken: response.data.qrToken,
-      };
-      console.log('qrData: ', qrData);
-      setQrData(JSON.stringify(qrData)); // Sesuaikan dengan struktur response API Anda
-      setCashierID(response.data.cashierID);
-      setQrToken(response.data.qrToken);
+      const response = await axiosGenerateLoginQr(
+        merchantID,
+        cashierName,
+        expirationTime
+      );
+
+      console.log('qrData: ', response.data);
+      return response.data;
     } catch (error) {
       setErrorMessage('Failed to generate QR code. Please try again later.');
     } finally {
@@ -53,8 +87,9 @@ function Home() {
     }
   };
 
+  // useeffect check login qr
   useEffect(() => {
-    if (!merchantID || !qrData) return;
+    if (!merchantID || !modalQrData || !openQrModal) return;
 
     const checkLoginQr = async () => {
       try {
@@ -65,8 +100,8 @@ function Home() {
         );
         console.log('Check Login QR Response:', response.loggedIn);
         if (!!response.loggedIn) {
-          toast.success(`Login QR Cashier ID: ${cashierID} Success!`);
-          fetchQrData(merchantID); // Generate QR baru setelah login sukses
+          toast.success(`Login QR Success!`);
+          setOpenQrModal(false);
         }
       } catch (error) {
         console.error('Error checking login QR:', error);
@@ -75,44 +110,232 @@ function Home() {
 
     const checkLoginQrInterval = setInterval(() => {
       checkLoginQr();
-    }, 5000); // Post data every 5 seconds
+    }, 3000); // Post data every 5 seconds
 
     return () => clearInterval(checkLoginQrInterval); // Cleanup interval on component unmount
-  }, [merchantID, qrData, navigate]); // Add qrToken as dependency
+  }, [merchantID, modalQrData, openQrModal, navigate]); // Add qrToken as dependency
 
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
   };
 
-  const handleListCashier = () => {
-    navigate('/list-cashier');
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleQrModalClose = () => {
+    setOpenQrModal(false);
+    setSelectedCashier(null);
+  };
+
+  const handleDisconnect = async () => {
+    const response = await axiosLogoutQr(merchantID, cashierID, cashierToken);
+    console.log('response: ', response);
+    toast.success(`Logout Success!`);
+    setSelectedCashier(null);
+    setOpenQrModal(false);
+  };
+
+  // handle when click on card
+  const handleCardClick = async (cashier) => {
+    setSelectedCashier(cashier);
+    try {
+      console.log('selected cashier: ', cashier);
+      const fetchedQrData = await fetchQrData(
+        merchantID,
+        cashier.cashierName,
+        cashier.expirationTime
+      );
+
+      console.log('fetchedQrData: ', fetchedQrData);
+
+      const newQrData = {
+        cashierName: fetchedQrData.cashierName,
+        expirationTime: fetchedQrData.expirationTime,
+        qrString: JSON.stringify({
+          merchantID,
+          cashierID: fetchedQrData.cashierID,
+          qrToken: fetchedQrData.qrToken,
+        }),
+      };
+
+      setCashierID(fetchedQrData.cashierID);
+      if (!fetchedQrData.loggedIn) {
+        setQrToken(fetchedQrData.qrToken);
+        setModalQrData(newQrData.qrString);
+      } else {
+        setCashierToken(fetchedQrData.cashierToken);
+        setModalQrData(null);
+      }
+      setOpenQrModal(true);
+    } catch (error) {
+      setErrorMessage('Failed to generate QR code. Please try again later.');
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      console.log('cashierName: ', cashierName);
+      console.log('expirationTime: ', expirationTime);
+
+      const fetchedQrData = await fetchQrData(
+        merchantID,
+        cashierName,
+        expirationTime
+      );
+
+      const newQrData = {
+        cashierName: fetchedQrData.cashierName,
+        expirationTime: fetchedQrData.expirationTime,
+        qrString: JSON.stringify({
+          merchantID,
+          qrToken: fetchedQrData.qrToken,
+        }),
+      };
+
+      // Add the new QR code data to the qrCards array
+      setQrCards((prevQrCards) => [...prevQrCards, newQrData]);
+
+      // Clear form inputs
+      setCashierName('');
+      setExpirationTime('');
+      setOpen(false);
+    } catch (error) {
+      setOpen(false);
+      setErrorMessage('Failed to generate QR code. Please try again later.');
+    }
   };
 
   return (
     <div className="home-container">
-      <div className='content-container'>
-        <h1>Scan This QR To Login</h1>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleListCashier}
-          style={{ position: 'absolute', top: 10, left: 10, width: '10%' }}
-        >
-          List Cashier
-        </Button>
+      <div className="content-container">
+        <h1>Point Of Sale Management</h1>
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleClickOpen}
+          style={{ marginBottom: '20px' }}
+        >
+          Create New Point of Sale
+        </Button>
         {loading && <p>Loading...</p>}{' '}
         {/* Tampilkan pesan loading jika loading === true */}
         {errorMessage && <p className="error">{errorMessage}</p>}
-        {qrData && (
-          <div>
-            <QRCode value={qrData} size={300} /> <p>Cashier ID: {cashierID}</p>
-          </div>
-        )}
+        {listCashier.map((card, index) => (
+          <Card
+            key={index}
+            style={{ marginTop: '20px', cursor: 'pointer' }}
+            onClick={() => handleCardClick(card)}
+          >
+            <CardContent>
+              <Typography variant="h5" component="div">
+                {card.cashierName}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Expiration Time: {card.expirationTime}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Is Login: {card.loggedIn ? 'Yes' : 'No'}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Create New Point of Sale</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please enter the name and expiration time for the new point of sale.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Name"
+            type="text"
+            fullWidth
+            value={cashierName}
+            onChange={(e) => setCashierName(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Expiration Time"
+            type="number"
+            fullWidth
+            value={expirationTime}
+            onChange={(e) => setExpirationTime(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {modalQrData ? (
+        <Dialog
+          open={openQrModal}
+          onClose={handleQrModalClose}
+          className="cashier-qr-modal"
+        >
+          <DialogTitle>Generated QR Code</DialogTitle>
+          <DialogContent>
+            <QRCode value={modalQrData} size={200} />
+            <DialogContentText style={{ marginTop: '20px' }}>
+              Scan this QR code to login as{' '}
+              {selectedCashier && selectedCashier.cashierName}
+            </DialogContentText>
+            <DialogContentText>
+              Expiration Time:{' '}
+              {selectedCashier && selectedCashier.expirationTime}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleQrModalClose} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      ) : (
+        <Dialog
+          open={openQrModal}
+          onClose={handleQrModalClose}
+          className="cashier-qr-modal"
+        >
+          <DialogTitle>
+            {selectedCashier && selectedCashier.cashierName}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Expiration Time:
+              {selectedCashier && selectedCashier.expirationTime}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleQrModalClose} color="primary">
+              Close
+            </Button>
+            <Button
+              variant="contained"
+              style={{ textAlign: 'left', backgroundColor: 'red' }}
+              onClick={handleDisconnect} 
+            >
+              Disconnect
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+
       <ToastContainer />
     </div>
   );

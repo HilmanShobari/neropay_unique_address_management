@@ -6,6 +6,10 @@
   text-align: center;
 }
 
+.cashier-qr-modal {
+  text-align: center;
+}
+
 .logout-button {
   width: 10%;
   position: absolute;

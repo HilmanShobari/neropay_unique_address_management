@@ -26,9 +26,13 @@ export const axiosLogin = async (email, password) => {
 };
 
 // Fungsi untuk memanggil API generate QR code dengan merchantID
-export const axiosGenerateLoginQr = async (merchantID) => {
+export const axiosGenerateLoginQr = async (
+  merchantID,
+  cashierName,
+  expirationTime
+) => {
   try {
-    const response = await api.post('/loginQr/generate', { merchantID });
+    const response = await api.post('/loginQr/generate', { merchantID, cashierName, expirationTime });
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);
@@ -46,6 +50,20 @@ export const axiosCheckLoginQr = async (merchantID, cashierID, qrToken) => {
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);
+    throw error;
+  }
+};
+
+export const axiosLogoutQr = async (merchantID, cashierID, cashierToken) => {
+  try {
+    const response = await api.post('/loginQr/logout', {
+      merchantID,
+      cashierID,
+      cashierToken,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error during login:', error);
     throw error;
   }
 };

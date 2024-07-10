@@ -29,7 +29,7 @@ function ListCashierClass() {
         }
 
         const response = await axiosGetListCashier(merchantID);
-        console.log('response: ', response.data);
+        console.log('response list cashier: ', response.data);
         setListCashier(response.data);
       } catch (error) {
         console.error('Error fetching list of cashiers:', error);
@@ -59,14 +59,14 @@ function ListCashierClass() {
       <Table>
         <TableHead>
           <TableRow>
-            <StyledTableCell>Cashier ID</StyledTableCell>
+            <StyledTableCell>Cashier Name</StyledTableCell>
             <StyledTableCell>Cashier Token</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listCashier.map(cashier => (
             <TableRow key={cashier.id}>
-              <StyledTableCellBody>{cashier.cashierID}</StyledTableCellBody>
+              <StyledTableCellBody>{cashier.cashierName}</StyledTableCellBody>
               <StyledTableCellBody>{cashier.cashierToken}</StyledTableCellBody>
             </TableRow>
           ))}
