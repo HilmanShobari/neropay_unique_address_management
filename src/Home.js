@@ -8,6 +8,7 @@ import {
   axiosGetListCashier,
   axiosLogoutQr
 } from './Axios';
+import moment from 'moment-timezone'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -36,6 +37,8 @@ function Home() {
   const [openQrModal, setOpenQrModal] = useState(false); // State for QR modal open
   const [qrCards, setQrCards] = useState([]); // State for storing multiple QR code cards
   const [cashierName, setCashierName] = useState('');
+  const [hours, setHours] = useState('');
+  const [minutes, setMinutes] = useState('');
   const [expirationTime, setExpirationTime] = useState('');
   const [selectedCashier, setSelectedCashier] = useState(null); // State for selected cashier
   const [modalQrData, setModalQrData] = useState(''); // State for QR code data in modal
@@ -110,7 +113,7 @@ function Home() {
 
     const checkLoginQrInterval = setInterval(() => {
       checkLoginQr();
-    }, 3000); // Post data every 5 seconds
+    }, 3000); // Post data every 3 seconds
 
     return () => clearInterval(checkLoginQrInterval); // Cleanup interval on component unmount
   }, [merchantID, modalQrData, openQrModal, navigate]); // Add qrToken as dependency
@@ -181,12 +184,17 @@ function Home() {
   const handleSubmit = async () => {
     try {
       console.log('cashierName: ', cashierName);
-      console.log('expirationTime: ', expirationTime);
+      console.log('hours: ', hours);
+      console.log('minutes: ', minutes);
+
+      const totalSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+      const newExpirationTime = Math.floor(Date.now() / 1000) + totalSeconds;
+      setExpirationTime(newExpirationTime);
 
       const fetchedQrData = await fetchQrData(
         merchantID,
         cashierName,
-        expirationTime
+        newExpirationTime
       );
 
       const newQrData = {
@@ -203,7 +211,8 @@ function Home() {
 
       // Clear form inputs
       setCashierName('');
-      setExpirationTime('');
+      setHours('');
+      setMinutes('');
       setOpen(false);
     } catch (error) {
       setOpen(false);
@@ -240,7 +249,7 @@ function Home() {
                 {card.cashierName}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Expiration Time: {card.expirationTime}
+                Expiration Time: {moment.unix(card.expirationTime).format('DD-MM-YYYY HH:mm:ss')}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Is Login: {card.loggedIn ? 'Yes' : 'No'}
@@ -266,11 +275,19 @@ function Home() {
           />
           <TextField
             margin="dense"
-            label="Expiration Time"
+            label="Hours"
             type="number"
             fullWidth
-            value={expirationTime}
-            onChange={(e) => setExpirationTime(e.target.value)}
+            value={hours}
+            onChange={(e) => setHours(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Minutes"
+            type="number"
+            fullWidth
+            value={minutes}
+            onChange={(e) => setMinutes(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
