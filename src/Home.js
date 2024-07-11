@@ -368,7 +368,10 @@ function Home() {
               Expired At:{' '}
               {selectedCashier &&
                 moment
-                  .unix(selectedCashier.expiredAt)
+                  .unix(
+                    Math.floor(Date.now() / 1000) +
+                      Number(selectedCashier.expirationTime)
+                  )
                   .format('DD-MM-YYYY HH:mm:ss')}
             </DialogContentText>
           </DialogContent>
