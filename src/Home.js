@@ -251,7 +251,7 @@ function Home() {
   const secondsToTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minutes${
+    return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${
       minutes !== 1 ? 's' : ''
     }`;
   };
