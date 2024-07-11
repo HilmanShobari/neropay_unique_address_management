@@ -68,6 +68,7 @@ function Home() {
         console.log('response list cashier: ', response.data);
         setListCashier(response.data);
       } catch (error) {
+        handleLogout();
         console.error('Error fetching list of cashiers:', error);
       }
     };
