@@ -6,9 +6,11 @@ import {
   axiosCheckLoginQr,
   axiosGenerateLoginQr,
   axiosGetListCashier,
-  axiosLogoutQr
+  axiosLogoutQr,
+  axiosEditCashier,
+  axiosDeleteCashier,
 } from './Axios';
-import moment from 'moment-timezone'
+import moment from 'moment-timezone';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -35,6 +37,7 @@ function Home() {
   const [loading, setLoading] = useState(false); // State untuk status loading
   const [open, setOpen] = useState(false); // State for dialog open
   const [openQrModal, setOpenQrModal] = useState(false); // State for QR modal open
+  const [openEditModal, setOpenEditModal] = useState(false); // State for Edit dialog open
   const [qrCards, setQrCards] = useState([]); // State for storing multiple QR code cards
   const [cashierName, setCashierName] = useState('');
   const [hours, setHours] = useState('');
@@ -144,7 +147,33 @@ function Home() {
     setOpenQrModal(false);
   };
 
-  // handle when click on card
+  const handleDeleteCashier = async () => {
+    const response = await axiosDeleteCashier(merchantID, cashierID);
+    console.log('response: ', response);
+    toast.success(`Delete Cashier Success!`);
+    setSelectedCashier(null);
+    setOpenQrModal(false);
+  };
+
+  const handleEditCashier = () => {
+    setOpenEditModal(true);
+    setCashierName(selectedCashier.cashierName);
+    const expiration = selectedCashier.expirationTime;
+    setHours(Math.floor(expiration / 3600));
+    setMinutes(Math.floor((expiration % 3600) / 60));
+  };
+
+  const handleSubmitEdit = async () => {
+    const newExpirationTime = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+    setExpirationTime(newExpirationTime);
+    const response = await axiosEditCashier(merchantID, cashierID, cashierName, newExpirationTime);
+    console.log('response: ', response);
+    toast.success(`Edit Cashier Success!`);
+    setSelectedCashier(null);
+    setOpenEditModal(false);
+    setOpenQrModal(false);
+  };
+
   const handleCardClick = async (cashier) => {
     setSelectedCashier(cashier);
     try {
@@ -187,8 +216,7 @@ function Home() {
       console.log('hours: ', hours);
       console.log('minutes: ', minutes);
 
-      const totalSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
-      const newExpirationTime = Math.floor(Date.now() / 1000) + totalSeconds;
+      const newExpirationTime = parseInt(hours) * 3600 + parseInt(minutes) * 60;
       setExpirationTime(newExpirationTime);
 
       const fetchedQrData = await fetchQrData(
@@ -220,6 +248,14 @@ function Home() {
     }
   };
 
+  const secondsToTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minutes${
+      minutes !== 1 ? 's' : ''
+    }`;
+  };
+
   return (
     <div className="home-container">
       <div className="content-container">
@@ -249,7 +285,11 @@ function Home() {
                 {card.cashierName}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Expiration Time: {moment.unix(card.expirationTime).format('DD-MM-YYYY HH:mm:ss')}
+                Expiration Time: {secondsToTime(card.expirationTime)}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Expired At:{' '}
+                {moment.unix(card.expiredAt).format('DD-MM-YYYY HH:mm:ss')}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Is Login: {card.loggedIn ? 'Yes' : 'No'}
@@ -314,12 +354,52 @@ function Home() {
             </DialogContentText>
             <DialogContentText>
               Expiration Time:{' '}
-              {selectedCashier && selectedCashier.expirationTime}
+              {selectedCashier && secondsToTime(selectedCashier.expirationTime)}
+            </DialogContentText>
+            <DialogContentText>
+              Expired At:{' '}
+              {selectedCashier &&
+                moment
+                  .unix(selectedCashier.expiredAt)
+                  .format('DD-MM-YYYY HH:mm:ss')}
             </DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleQrModalClose} color="primary">
+
+          <DialogActions style={{ justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              style={{
+                height: '100%',
+                paddingLeft: '0',
+                paddingRight: '0',
+              }}
+              onClick={handleQrModalClose}
+              color="primary"
+            >
               Close
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleEditCashier}
+              style={{
+                backgroundColor: 'green',
+                height: '100%',
+                paddingLeft: '0',
+                paddingRight: '0',
+              }}
+            >
+              Edit Cashier
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleDeleteCashier}
+              style={{
+                backgroundColor: 'red',
+                width: '400px',
+                height: '100%',
+              }}
+            >
+              Delete Cashier
             </Button>
           </DialogActions>
         </Dialog>
@@ -334,24 +414,81 @@ function Home() {
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Expiration Time:
-              {selectedCashier && selectedCashier.expirationTime}
+              Expiration Time:{' '}
+              {selectedCashier && secondsToTime(selectedCashier.expirationTime)}
+            </DialogContentText>
+            <DialogContentText>
+              Expired At:{' '}
+              {selectedCashier &&
+                moment
+                  .unix(selectedCashier.expiredAt)
+                  .format('DD-MM-YYYY HH:mm:ss')}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleQrModalClose} color="primary">
+            <Button
+              variant="contained"
+              style={{
+                width: '50%',
+                height: '100%',
+              }}
+              onClick={handleQrModalClose}
+              color="primary"
+            >
               Close
             </Button>
             <Button
               variant="contained"
               style={{ textAlign: 'left', backgroundColor: 'red' }}
-              onClick={handleDisconnect} 
+              onClick={handleDisconnect}
             >
               Disconnect
             </Button>
           </DialogActions>
         </Dialog>
       )}
+      {/* Edit Cashier Dialog */}
+      <Dialog open={openEditModal} onClose={() => setOpenEditModal(false)}>
+        <DialogTitle>Edit Cashier</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please edit the name and expiration time for the cashier.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Name"
+            type="text"
+            fullWidth
+            value={cashierName}
+            onChange={(e) => setCashierName(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Hours"
+            type="number"
+            fullWidth
+            value={hours}
+            onChange={(e) => setHours(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Minutes"
+            type="number"
+            fullWidth
+            value={minutes}
+            onChange={(e) => setMinutes(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenEditModal(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmitEdit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <ToastContainer />
     </div>

@@ -32,7 +32,11 @@ export const axiosGenerateLoginQr = async (
   expirationTime
 ) => {
   try {
-    const response = await api.post('/loginQr/generate', { merchantID, cashierName, expirationTime });
+    const response = await api.post('/loginQr/generate', {
+      merchantID,
+      cashierName,
+      expirationTime,
+    });
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);
@@ -56,10 +60,38 @@ export const axiosCheckLoginQr = async (merchantID, cashierID, qrToken) => {
 
 export const axiosLogoutQr = async (merchantID, cashierID, cashierToken) => {
   try {
-    const response = await api.post('/loginQr/logout', {
+    const response = await api.post('/cashier/logout', {
       merchantID,
       cashierID,
       cashierToken,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error during login:', error);
+    throw error;
+  }
+};
+
+export const axiosEditCashier = async (merchantID, cashierID, cashierName, expirationTime) => {
+  try {
+    const response = await api.post('/cashier/edit', {
+      merchantID,
+      cashierID,
+      cashierName,
+      expirationTime
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error during login:', error);
+    throw error;
+  }
+};
+
+export const axiosDeleteCashier = async (merchantID, cashierID) => {
+  try {
+    const response = await api.post('/cashier/delete', {
+      merchantID,
+      cashierID,
     });
     return response.data;
   } catch (error) {
