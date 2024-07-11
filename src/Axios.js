@@ -9,6 +9,11 @@ const api = axios.create({
   },
 });
 
+// Fungsi untuk mendapatkan accessToken dari localStorage
+const getAccessToken = () => {
+  return localStorage.getItem('accessToken');
+};
+
 // Fungsi untuk mengirim data ke endpoint login
 export const axiosLogin = async (email, password) => {
   try {
@@ -32,16 +37,20 @@ export const axiosGenerateLoginQr = async (
   expirationTime
 ) => {
   try {
-    const accessToken = localStorage.get('accessToken');
-    const response = await api.post('/loginQr/generate', {
-      merchantID,
-      cashierName,
-      expirationTime,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
+    const accessToken = getAccessToken();
+    const response = await api.post(
+      '/loginQr/generate',
+      {
+        merchantID,
+        cashierName,
+        expirationTime,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
-    });
+    );
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);
@@ -51,11 +60,20 @@ export const axiosGenerateLoginQr = async (
 
 export const axiosCheckLoginQr = async (merchantID, cashierID, qrToken) => {
   try {
-    const response = await api.post('/loginQr/check', {
-      merchantID,
-      cashierID,
-      qrToken,
-    });
+    const accessToken = getAccessToken();
+    const response = await api.post(
+      '/loginQr/check',
+      {
+        merchantID,
+        cashierID,
+        qrToken,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);
@@ -65,11 +83,20 @@ export const axiosCheckLoginQr = async (merchantID, cashierID, qrToken) => {
 
 export const axiosLogoutQr = async (merchantID, cashierID, cashierToken) => {
   try {
-    const response = await api.post('/cashier/logout', {
-      merchantID,
-      cashierID,
-      cashierToken,
-    });
+    const accessToken = getAccessToken();
+    const response = await api.post(
+      '/cashier/logout',
+      {
+        merchantID,
+        cashierID,
+        cashierToken,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error during login:', error);
@@ -77,14 +104,28 @@ export const axiosLogoutQr = async (merchantID, cashierID, cashierToken) => {
   }
 };
 
-export const axiosEditCashier = async (merchantID, cashierID, cashierName, expirationTime) => {
+export const axiosEditCashier = async (
+  merchantID,
+  cashierID,
+  cashierName,
+  expirationTime
+) => {
   try {
-    const response = await api.post('/cashier/edit', {
-      merchantID,
-      cashierID,
-      cashierName,
-      expirationTime
-    });
+    const accessToken = getAccessToken();
+    const response = await api.post(
+      '/cashier/edit',
+      {
+        merchantID,
+        cashierID,
+        cashierName,
+        expirationTime,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error during login:', error);
@@ -94,10 +135,19 @@ export const axiosEditCashier = async (merchantID, cashierID, cashierName, expir
 
 export const axiosDeleteCashier = async (merchantID, cashierID) => {
   try {
-    const response = await api.post('/cashier/delete', {
-      merchantID,
-      cashierID,
-    });
+    const accessToken = getAccessToken();
+    const response = await api.post(
+      '/cashier/delete',
+      {
+        merchantID,
+        cashierID,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error during login:', error);
@@ -107,7 +157,16 @@ export const axiosDeleteCashier = async (merchantID, cashierID) => {
 
 export const axiosGetListCashier = async (merchantID) => {
   try {
-    const response = await api.post('/cashier/list', { merchantID });
+    const accessToken = getAccessToken();
+    const response = await api.post(
+      '/cashier/list',
+      { merchantID },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error generating QR code:', error);
