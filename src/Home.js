@@ -439,6 +439,18 @@ function Home() {
             </Button>
             <Button
               variant="contained"
+              onClick={handleEditCashier}
+              style={{
+                backgroundColor: 'green',
+                height: '100%',
+                paddingLeft: '0',
+                paddingRight: '0',
+              }}
+            >
+              Edit Cashier
+            </Button>
+            <Button
+              variant="contained"
               style={{ textAlign: 'left', backgroundColor: 'red' }}
               onClick={handleDisconnect}
             >
