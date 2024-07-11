@@ -73,7 +73,7 @@ function Home() {
     };
 
     fetchListCashier(); // Fetch list cashiers
-  }, [navigate, qrCards, openQrModal]);
+  }, [navigate, qrCards, openQrModal, expirationTime]);
 
   const fetchQrData = async (merchantID, cashierName, expirationTime) => {
     setLoading(true); // Mengatur loading menjadi true saat mulai fetch data
