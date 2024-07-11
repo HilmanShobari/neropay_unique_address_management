@@ -73,7 +73,7 @@ function Home() {
     };
 
     fetchListCashier(); // Fetch list cashiers
-  }, [navigate, qrCards, openQrModal, expirationTime]);
+  }, [navigate, qrCards, openQrModal]);
 
   const fetchQrData = async (merchantID, cashierName, expirationTime) => {
     setLoading(true); // Mengatur loading menjadi true saat mulai fetch data
@@ -166,9 +166,16 @@ function Home() {
   const handleSubmitEdit = async () => {
     const newExpirationTime = parseInt(hours) * 3600 + parseInt(minutes) * 60;
     setExpirationTime(newExpirationTime);
-    const response = await axiosEditCashier(merchantID, cashierID, cashierName, newExpirationTime);
+    const response = await axiosEditCashier(
+      merchantID,
+      cashierID,
+      cashierName,
+      newExpirationTime
+    );
     console.log('response: ', response);
     toast.success(`Edit Cashier Success!`);
+
+    fetchQrData(merchantID, cashierName, newExpirationTime);
     setSelectedCashier(null);
     setOpenEditModal(false);
     setOpenQrModal(false);
