@@ -32,10 +32,15 @@ export const axiosGenerateLoginQr = async (
   expirationTime
 ) => {
   try {
+    const accessToken = localStorage.get('accessToken');
     const response = await api.post('/loginQr/generate', {
       merchantID,
       cashierName,
       expirationTime,
+    }, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
     });
     return response.data;
   } catch (error) {
