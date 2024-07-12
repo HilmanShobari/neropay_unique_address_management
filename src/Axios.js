@@ -10,7 +10,7 @@ const api = axios.create({
 });
 
 // Fungsi untuk mendapatkan accessToken dari localStorage
-const getAccessToken = () => {
+export const getAccessToken = () => {
   return localStorage.getItem('accessToken');
 };
 

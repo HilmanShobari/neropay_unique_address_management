@@ -10,6 +10,7 @@ import {
   axiosEditCashier,
   axiosDeleteCashier,
 } from './Axios';
+import { websocketCheckLoginQr } from './Websocket';
 import moment from 'moment-timezone';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -100,7 +101,7 @@ function Home() {
 
     const checkLoginQr = async () => {
       try {
-        const response = await axiosCheckLoginQr(merchantID, cashierID);
+        const response = await websocketCheckLoginQr(merchantID, cashierID);
         console.log('Check Login QR Response:', response.loggedIn);
         if (!!response.loggedIn) {
           toast.success(`Login QR Success!`);
@@ -111,9 +112,11 @@ function Home() {
       }
     };
 
-    const checkLoginQrInterval = setInterval(() => {
-      checkLoginQr();
-    }, 3000); // Post data every 3 seconds
+    checkLoginQr();
+
+    // const checkLoginQrInterval = setInterval(() => {
+    //   checkLoginQr();
+    // }, 3000); // Post data every 3 seconds
 
     return () => clearInterval(checkLoginQrInterval); // Cleanup interval on component unmount
   }, [merchantID, modalQrData, openQrModal, navigate]); // Add qrToken as dependency
