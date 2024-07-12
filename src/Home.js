@@ -100,11 +100,7 @@ function Home() {
 
     const checkLoginQr = async () => {
       try {
-        const response = await axiosCheckLoginQr(
-          merchantID,
-          cashierID,
-          qrToken
-        );
+        const response = await axiosCheckLoginQr(merchantID, cashierID);
         console.log('Check Login QR Response:', response.loggedIn);
         if (!!response.loggedIn) {
           toast.success(`Login QR Success!`);

@@ -58,15 +58,14 @@ export const axiosGenerateLoginQr = async (
   }
 };
 
-export const axiosCheckLoginQr = async (merchantID, cashierID, qrToken) => {
+export const axiosCheckLoginQr = async (merchantID, cashierID) => {
   try {
     const accessToken = getAccessToken();
     const response = await api.post(
       '/loginQr/check',
       {
         merchantID,
-        cashierID,
-        qrToken,
+        cashierID
       },
       {
         headers: {
