@@ -10,7 +10,7 @@ import {
   axiosEditCashier,
   axiosDeleteCashier,
 } from './Axios';
-import { websocketCheckLoginQr } from './Websocket';
+// import { websocketCheckLoginQr } from './Websocket';
 import moment from 'moment-timezone';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
