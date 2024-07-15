@@ -101,7 +101,7 @@ function Home() {
 
     const checkLoginQr = async () => {
       try {
-        const response = await websocketCheckLoginQr(merchantID, cashierID);
+        const response = await axiosCheckLoginQr(merchantID, cashierID);
         console.log('Check Login QR Response:', response.loggedIn);
         if (!!response.loggedIn) {
           toast.success(`Login QR Success!`);
@@ -114,11 +114,11 @@ function Home() {
 
     checkLoginQr();
 
-    // const checkLoginQrInterval = setInterval(() => {
-    //   checkLoginQr();
-    // }, 3000); // Post data every 3 seconds
+    const checkLoginQrInterval = setInterval(() => {
+      checkLoginQr();
+    }, 3000); // Post data every 3 seconds
 
-    // return () => clearInterval(checkLoginQrInterval); // Cleanup interval on component unmount
+    return () => clearInterval(checkLoginQrInterval); // Cleanup interval on component unmount
   }, [merchantID, modalQrData, openQrModal, navigate]); // Add qrToken as dependency
 
   const handleLogout = () => {
