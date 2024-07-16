@@ -363,10 +363,7 @@ function Home() {
               Qr Expired At:{' '}
               {selectedCashier &&
                 moment
-                  .unix(
-                    Math.floor(Date.now() / 1000) +
-                      Number(selectedCashier.qrExpiredAt)
-                  )
+                  .unix(Number(selectedCashier.qrExpiredAt))
                   .format('DD-MM-YYYY HH:mm:ss')}
             </DialogContentText>
             <DialogContentText>
