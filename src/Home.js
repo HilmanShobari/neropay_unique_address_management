@@ -360,11 +360,21 @@ function Home() {
               {selectedCashier && selectedCashier.cashierName}
             </DialogContentText>
             <DialogContentText>
-              Expiration Time:{' '}
+              Qr Expired At:{' '}
+              {selectedCashier &&
+                moment
+                  .unix(
+                    Math.floor(Date.now() / 1000) +
+                      Number(selectedCashier.qrExpiredAt)
+                  )
+                  .format('DD-MM-YYYY HH:mm:ss')}
+            </DialogContentText>
+            <DialogContentText>
+              Logged In Expiration Time:{' '}
               {selectedCashier && secondsToTime(selectedCashier.expirationTime)}
             </DialogContentText>
             <DialogContentText>
-              Expired At:{' '}
+              Logged In Expired At:{' '}
               {selectedCashier &&
                 moment
                   .unix(
