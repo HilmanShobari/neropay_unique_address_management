@@ -292,10 +292,14 @@ function Home() {
                 {card.cashierName}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Expiration Time: {secondsToTime(card.expirationTime)}
+                Qr Expired At:{' '}
+                {moment.unix(card.qrExpiredAt).format('DD-MM-YYYY HH:mm:ss')}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Expired At:{' '}
+                Logged In Expiration Time: {secondsToTime(card.expirationTime)}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Logged In Expired At:{' '}
                 {moment.unix(card.expiredAt).format('DD-MM-YYYY HH:mm:ss')}
               </Typography>
               <Typography variant="body2" color="textSecondary">
