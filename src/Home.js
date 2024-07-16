@@ -44,6 +44,7 @@ function Home() {
   const [hours, setHours] = useState('');
   const [minutes, setMinutes] = useState('');
   const [expirationTime, setExpirationTime] = useState('');
+  const [qrCode, setQrCode] = useState('');
   const [selectedCashier, setSelectedCashier] = useState(null); // State for selected cashier
   const [modalQrData, setModalQrData] = useState(''); // State for QR code data in modal
   const navigate = useNavigate();
@@ -203,10 +204,12 @@ function Home() {
         }),
       };
 
+      // set data on modal
       setCashierID(fetchedQrData.cashierID);
       if (!fetchedQrData.loggedIn) {
         setQrToken(fetchedQrData.qrToken);
         setModalQrData(newQrData.qrString);
+        setQrCode(fetchedQrData.qrCode)
       } else {
         setCashierToken(fetchedQrData.cashierToken);
         setModalQrData(null);
@@ -367,7 +370,7 @@ function Home() {
               {selectedCashier && selectedCashier.qrExpirationTime + ' seconds'}
             </DialogContentText>
             <DialogContentText style={{ marginTop: '20px' }}>
-              Or Input This Code {selectedCashier && selectedCashier.qrCode}
+              Or Input This Code {qrCode}
             </DialogContentText>
             <DialogContentText>
               Logged In Expiration Time:{' '}
