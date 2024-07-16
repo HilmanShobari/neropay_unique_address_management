@@ -258,9 +258,10 @@ function Home() {
   const secondsToTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
     return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${
       minutes !== 1 ? 's' : ''
-    }`;
+    } ${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`;
   };
 
   return (
@@ -292,8 +293,7 @@ function Home() {
                 {card.cashierName}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Qr Expiration Time:{' '}
-                {secondsToTime(card.qrExpirationTime)}
+                Qr Expiration Time: {secondsToTime(card.qrExpirationTime)}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Logged In Expiration Time: {secondsToTime(card.expirationTime)}
@@ -365,7 +365,8 @@ function Home() {
             </DialogContentText>
             <DialogContentText>
               Qr Expiration Time:{' '}
-              {selectedCashier && secondsToTime(selectedCashier.qrExpirationTime)}
+              {selectedCashier &&
+                secondsToTime(selectedCashier.qrExpirationTime)}
             </DialogContentText>
             <DialogContentText style={{ marginTop: '20px' }}>
               Or Input This Code {selectedCashier && selectedCashier.qrCode}
