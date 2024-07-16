@@ -366,6 +366,9 @@ function Home() {
                   .unix(Number(selectedCashier.qrExpiredAt))
                   .format('DD-MM-YYYY HH:mm:ss')}
             </DialogContentText>
+            <DialogContentText style={{ marginTop: '20px' }}>
+              Or Input This Code {selectedCashier && selectedCashier.qrCode}
+            </DialogContentText>
             <DialogContentText>
               Logged In Expiration Time:{' '}
               {selectedCashier && secondsToTime(selectedCashier.expirationTime)}
