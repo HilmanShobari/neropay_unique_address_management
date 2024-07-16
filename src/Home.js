@@ -292,8 +292,8 @@ function Home() {
                 {card.cashierName}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Qr Expired At:{' '}
-                {moment.unix(card.qrExpiredAt).format('DD-MM-YYYY HH:mm:ss')}
+                Qr Expiration Time:{' '}
+                {secondsToTime(card.qrExpirationTime)}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Logged In Expiration Time: {secondsToTime(card.expirationTime)}
@@ -364,11 +364,8 @@ function Home() {
               {selectedCashier && selectedCashier.cashierName}
             </DialogContentText>
             <DialogContentText>
-              Qr Expired At:{' '}
-              {selectedCashier &&
-                moment
-                  .unix(Number(selectedCashier.qrExpiredAt))
-                  .format('DD-MM-YYYY HH:mm:ss')}
+              Qr Expiration Time:{' '}
+              {selectedCashier && secondsToTime(selectedCashier.qrExpirationTime)}
             </DialogContentText>
             <DialogContentText style={{ marginTop: '20px' }}>
               Or Input This Code {selectedCashier && selectedCashier.qrCode}
