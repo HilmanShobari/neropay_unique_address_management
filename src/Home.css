@@ -1,27 +1,27 @@
 .home-container {
   padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .content-container {
   text-align: center;
 }
 
-.cashier-qr-modal {
+.unique-addresses-table {
+  margin: 0 auto; /* Centers the table horizontally */
+  border-collapse: collapse;
+  width: 100%; /* Adjust the width as needed */
+}
+
+.unique-addresses-table th, 
+.unique-addresses-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.unique-addresses-table th {
+  background-color: #f2f2f2;
   text-align: center;
-}
-
-.logout-button {
-  width: 10%;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-.logout-button:hover {
-  background-color: darkred;
 }

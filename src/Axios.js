@@ -9,166 +9,29 @@ const api = axios.create({
   },
 });
 
-// Fungsi untuk mendapatkan accessToken dari localStorage
-export const getAccessToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Fungsi untuk mengirim data ke endpoint login
-export const axiosLogin = async (email, password) => {
+export const axiosRetrieveBalance = async (addresses) => {
   try {
-    const response = await api.post('/merchant/login', { email, password });
-    // Simpan data ke localStorage
-    localStorage.setItem('accessToken', response.data.data.accessToken);
-    localStorage.setItem('merchantID', response.data.data.merchantID);
-    localStorage.setItem('merchantAddress', response.data.data.merchantAddress);
-    localStorage.setItem('merchantApiKey', response.data.data.merchantApiKey);
+    const response = await api.post('/testnet/retrieveBalance', {
+      network: 'AMOY',
+      addresses
+    });
     return response.data;
   } catch (error) {
-    console.error('Error during login:', error);
+    console.error('Error:', error);
     throw error;
   }
 };
 
-// Fungsi untuk memanggil API generate QR code dengan merchantID
-export const axiosGenerateLoginQr = async (
-  merchantID,
-  cashierName,
-  expirationTime
-) => {
+export const axiosGetListUniqueAddress = async () => {
   try {
-    const accessToken = getAccessToken();
-    const response = await api.post(
-      '/loginQr/generate',
-      {
-        merchantID,
-        cashierName,
-        expirationTime,
+    const response = await api.get('/testnet/getUniqueAddress', {
+      params: {
+        network: 'AMOY',
       },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    });
     return response.data;
   } catch (error) {
-    console.error('Error generating QR code:', error);
-    throw error;
-  }
-};
-
-export const axiosCheckLoginQr = async (merchantID, cashierID) => {
-  try {
-    const accessToken = getAccessToken();
-    const response = await api.post(
-      '/loginQr/check',
-      {
-        merchantID,
-        cashierID
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-    throw error;
-  }
-};
-
-export const axiosLogoutQr = async (merchantID, cashierID, cashierToken) => {
-  try {
-    const accessToken = getAccessToken();
-    const response = await api.post(
-      '/cashier/logout',
-      {
-        merchantID,
-        cashierID,
-        cashierToken,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error during login:', error);
-    throw error;
-  }
-};
-
-export const axiosEditCashier = async (
-  merchantID,
-  cashierID,
-  cashierName,
-  expirationTime
-) => {
-  try {
-    const accessToken = getAccessToken();
-    const response = await api.post(
-      '/cashier/edit',
-      {
-        merchantID,
-        cashierID,
-        cashierName,
-        expirationTime,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error during login:', error);
-    throw error;
-  }
-};
-
-export const axiosDeleteCashier = async (merchantID, cashierID) => {
-  try {
-    const accessToken = getAccessToken();
-    const response = await api.post(
-      '/cashier/delete',
-      {
-        merchantID,
-        cashierID,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error during login:', error);
-    throw error;
-  }
-};
-
-export const axiosGetListCashier = async (merchantID) => {
-  try {
-    const accessToken = getAccessToken();
-    const response = await api.post(
-      '/cashier/list',
-      { merchantID },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error generating QR code:', error);
+    console.error('Error get list unique address:', error);
     throw error;
   }
 };
